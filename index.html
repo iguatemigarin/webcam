@@ -52,42 +52,45 @@
         </div>
         <video id="video" autoplay playsinline></video>
         <script>
-            const out = navigator.mediaDevices
-                .enumerateDevices()
-                .then((devices) => {
-                    const videoDevices = devices.filter(
-                        (d) => d.kind === "videoinput",
-                    );
+            navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+                const out = navigator.mediaDevices
+                    .enumerateDevices()
+                    .then((devices) => {
+                        const videoDevices = devices.filter(
+                            (d) => d.kind === "videoinput",
+                        );
 
-                    if (videoDevices.length === 0) {
-                        alert("No video devices found");
-                        return;
-                    }
+                        if (videoDevices.length === 0) {
+                            alert("No video devices found");
+                            return;
+                        }
 
-                    videoDevices.forEach((device) => {
-                        const button = document.createElement("button");
-                        button.innerText =
-                            device.label ||
-                            `Camera ${deviceButtons.children.length + 1}`;
-                        button.onclick = () => {
-                            navigator.mediaDevices
-                                .getUserMedia({
-                                    video: { deviceId: device.deviceId },
-                                })
-                                .then((stream) => {
-                                    document.getElementById("video").srcObject =
-                                        stream;
-                                    document.getElementById(
-                                        "controls",
-                                    ).style.display = "none";
-                                    document.getElementById(
-                                        "video",
-                                    ).style.display = "block";
-                                });
-                        };
-                        deviceButtons.appendChild(button);
+                        videoDevices.forEach((device) => {
+                            const button = document.createElement("button");
+                            button.innerText =
+                                device.label ||
+                                `Camera ${deviceButtons.children.length + 1}`;
+                            button.onclick = () => {
+                                navigator.mediaDevices
+                                    .getUserMedia({
+                                        video: { deviceId: device.deviceId },
+                                    })
+                                    .then((stream) => {
+                                        document.getElementById(
+                                            "video",
+                                        ).srcObject = stream;
+                                        document.getElementById(
+                                            "controls",
+                                        ).style.display = "none";
+                                        document.getElementById(
+                                            "video",
+                                        ).style.display = "block";
+                                    });
+                            };
+                            deviceButtons.appendChild(button);
+                        });
                     });
-                });
+            });
         </script>
     </body>
 </html>
