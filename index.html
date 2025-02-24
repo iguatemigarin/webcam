@@ -18,13 +18,20 @@
                 display: none;
             }
             #controls {
+                display: flex;
+                gap: 1em;
+                flex-direction: column;
+                justify-content: center;
+                position: fixed;
                 width: 100%;
                 height: 100%;
+            }
+            #deviceButtons {
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 1em;
                 gap: 1em;
+                flex-direction: column;
+                justify-content: center;
+                padding: 3em;
             }
             select,
             button,
@@ -47,50 +54,58 @@
         </style>
     </head>
     <body>
-        <div id="controls">
+        <section id="controls">
             <div id="deviceButtons"></div>
-        </div>
+        </section>
         <video id="video" autoplay playsinline></video>
         <script>
-            navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
-                const out = navigator.mediaDevices
-                    .enumerateDevices()
-                    .then((devices) => {
-                        const videoDevices = devices.filter(
-                            (d) => d.kind === "videoinput",
-                        );
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: {
+                        width: { min: 1280 },
+                    },
+                })
+                .then(() => {
+                    const out = navigator.mediaDevices
+                        .enumerateDevices()
+                        .then((devices) => {
+                            const videoDevices = devices.filter(
+                                (d) => d.kind === "videoinput",
+                            );
 
-                        if (videoDevices.length === 0) {
-                            alert("No video devices found");
-                            return;
-                        }
+                            if (videoDevices.length === 0) {
+                                alert("No video devices found");
+                                return;
+                            }
 
-                        videoDevices.forEach((device) => {
-                            const button = document.createElement("button");
-                            button.innerText =
-                                device.label ||
-                                `Camera ${deviceButtons.children.length + 1}`;
-                            button.onclick = () => {
-                                navigator.mediaDevices
-                                    .getUserMedia({
-                                        video: { deviceId: device.deviceId },
-                                    })
-                                    .then((stream) => {
-                                        document.getElementById(
-                                            "video",
-                                        ).srcObject = stream;
-                                        document.getElementById(
-                                            "controls",
-                                        ).style.display = "none";
-                                        document.getElementById(
-                                            "video",
-                                        ).style.display = "block";
-                                    });
-                            };
-                            deviceButtons.appendChild(button);
+                            videoDevices.forEach((device) => {
+                                const button = document.createElement("button");
+                                button.innerText =
+                                    device.label ||
+                                    `Camera ${deviceButtons.children.length + 1}`;
+                                button.onclick = () => {
+                                    navigator.mediaDevices
+                                        .getUserMedia({
+                                            video: {
+                                                deviceId: device.deviceId,
+                                            },
+                                        })
+                                        .then((stream) => {
+                                            document.getElementById(
+                                                "video",
+                                            ).srcObject = stream;
+                                            document.getElementById(
+                                                "controls",
+                                            ).style.display = "none";
+                                            document.getElementById(
+                                                "video",
+                                            ).style.display = "block";
+                                        });
+                                };
+                                deviceButtons.appendChild(button);
+                            });
                         });
-                    });
-            });
+                });
         </script>
     </body>
 </html>
